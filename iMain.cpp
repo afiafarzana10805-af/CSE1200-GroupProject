@@ -2257,3 +2257,131 @@ void initGame()
 	// Skeleton Running Left: 5 frames (sRunl1.png to sRunl5.png)
 	for (int i = 0; i < 5; i++) {
 		}
+	char path[128];
+	sprintf_s(path, "Images/sRunl%d.png", i + 1);
+	imgSkeletonRunLeft[i] = iLoadImage(path);
+	}
+
+	// Skeleton Fighting Right: 5 frames (sFight1.png to sFight5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/sFight%d.png", i + 1);
+		imgSkeletonFightRight[i] = iLoadImage(path);
+	}
+
+	// Skeleton Fighting Left: 5 frames (sFightl1.png to sFightl5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/sFightl%d.png", i + 1);
+		imgSkeletonFightLeft[i] = iLoadImage(path);
+	}
+
+	// Saint Walking & Fighting
+	imgSaintWalk[0] = iLoadImage("Images/saint walk 1.png");
+	imgSaintWalk[1] = iLoadImage("Images/saint walk 2.png");
+	imgSaintWalk[2] = iLoadImage("Images/saint walk 3.png");
+	imgSaintWalk[3] = iLoadImage("Images/saint walk 4.png");
+
+	imgSaintFight[0] = iLoadImage("Images/Saint fight 1.png");
+	imgSaintFight[1] = iLoadImage("Images/Saint fight 2.png");
+	imgSaintFight[2] = iLoadImage("Images/Saint fight 3.png");
+	imgSaintFight[3] = iLoadImage("Images/Saint fight 4.png");
+
+	// Flash Projectile
+	imgFlash = iLoadImage("Images/Flash.png");
+
+	// Level 3 Soldier Animations (Walk: SoilderW1..5, Fight: f1..6)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/SoilderW%d.png", i + 1);
+		imgSoldierWalk[i] = iLoadImage(path);
+	}
+	for (int i = 0; i < 6; i++) {
+		char path[128];
+		sprintf_s(path, "Images/f%d.png", i + 1);
+		imgSoldierFight[i] = iLoadImage(path);
+	}
+
+	// Level 3 Archer Animations (Walk: walk frame 1..8, Fight/Shoot: fight frame 1..5)
+	const char* archerWalkPaths[8] = {
+		"Images/walk frame 01 without background.png",
+		"Images/walk frame 02 without background.png",
+		"Images/walk frame 3 without background.png",
+		"Images/walk frame 4 without background.png",
+		"Images/walk frame 5 without background.png",
+		"Images/walk frame 6 without background.png",
+		"Images/walk frame 07 without background.png",
+		"Images/walk frame 8 without background.png"
+	};
+	for (int i = 0; i < 8; i++) {
+		imgArcherWalk[i] = iLoadImage((char*)archerWalkPaths[i]);
+	}
+
+	const char* archerFightPaths[5] = {
+		"Images/fight frame 1 without background.png",
+		"Images/fight frame 2 without background.png",
+		"Images/fight frame 3 without background.png",
+		"Images/fight frame 4 without background.png",
+		"Images/fight frame 5 without background.png"
+	};
+	for (int i = 0; i < 5; i++) {
+		imgArcherFight[i] = iLoadImage((char*)archerFightPaths[i]);
+	}
+
+	// Level 3 Arrow Projectile
+	imgArrow = iLoadImage("Images/Arrow.png");
+
+	// Level 4 Boss Mesh Animations (Walk: mv1..5, Fight: mvf1..5)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/mv%d.png", i + 1);
+		imgMeshWalk[i] = iLoadImage(path);
+	}
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/mvf%d.png", i + 1);
+		imgMeshFight[i] = iLoadImage(path);
+	}
+
+	// Health Cards & Progress Bar Assets (Clean standard RGBA loading - no chroma corruption)
+	imgHealthTim = iLoadImage("Images/Tim health.png");
+	imgHealthMesh = iLoadImage("Images/Mesh health.png");
+	imgHealthSaint = iLoadImage("Images/Saint health.png");
+	imgHealthArcher = iLoadImage("Images/Archer health.png");
+	imgHealthSoldier = iLoadImage("Images/Soilder health.png");
+	imgProgressBar = iLoadImage("Images/Progress Bar.png");
+
+	initEnemies();
+	initObstacles();
+	initBoss();
+	initMesh();
+	initAllies();
+	initArrows();
+
+	gSaveSystem.init();
+	gAudio.init();
+	gAudio.setMusicEnabled(gSaveSystem.isMusicEnabled());
+	gAudio.setSoundEnabled(gSaveSystem.isSoundEnabled());
+
+	printf("All assets and binary save data loaded successfully!\n");
+}
+
+int main()
+{
+	DWORD dwAttrib = GetFileAttributesA("Images");
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+		if (GetFileAttributesA("maingame\\Images") != INVALID_FILE_ATTRIBUTES) {
+			SetCurrentDirectoryA("maingame");
+		}
+		else if (GetFileAttributesA("..\\maingame\\Images") != INVALID_FILE_ATTRIBUTES) {
+			SetCurrentDirectoryA("..\\maingame");
+		}
+	}
+
+	iInitialize(SCREEN_W, SCREEN_H, "Eclipse Crown");
+	initGame();
+	iSetTimer(16, updatePhysics);
+
+	iStart();
+	return 0;
+}
