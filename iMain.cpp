@@ -2092,4 +2092,168 @@ void iMouse(int button, int state, int mx, int my) {
 				return;
 			}
 			return;
+			if (currentScreen == SCREEN_CREDITS) {
+				if (mx >= BTN_BACK_X1 && mx <= BTN_BACK_X2 &&
+					my >= BTN_BACK_Y1 && my <= BTN_BACK_Y2) {
+					currentScreen = SCREEN_MENU;
+				}
+				return;
+			}
+
+			if (currentScreen == SCREEN_STORY) {
+				if (storyIndex >= 1 && storyIndex <= 3) {
+					// Skip Button (Left)
+					if (mx >= BTN_STORY_SKIP_X1 && mx <= BTN_STORY_SKIP_X2 &&
+						my >= BTN_STORY_SKIP_Y1 && my <= BTN_STORY_SKIP_Y2) {
+						skipStory();
+						return;
+					}
+					// Next Button (Right)
+					if (mx >= BTN_STORY_NEXT_X1 && mx <= BTN_STORY_NEXT_X2 &&
+						my >= BTN_STORY_NEXT_Y1 && my <= BTN_STORY_NEXT_Y2) {
+						advanceStory();
+						return;
+					}
+				}
+				else if (storyIndex == 4) {
+					// Next / Continue Button (Right)
+					if (mx >= BTN_STORY_NEXT_X1 && mx <= BTN_STORY_NEXT_X2 &&
+						my >= BTN_STORY_NEXT_Y1 && my <= BTN_STORY_NEXT_Y2) {
+						advanceStory();
+						return;
+					}
+				}
+				return;
+			}
+
+			if (currentScreen == SCREEN_END_CARD) {
+				// "Go to Home" Button
+				if (mx >= BTN_END_HOME_X1 && mx <= BTN_END_HOME_X2 &&
+					my >= BTN_END_HOME_Y1 && my <= BTN_END_HOME_Y2) {
+					currentScreen = SCREEN_MENU;
+					isNamingPlayer = false;
+					showWinCard = false;
+					levelDone = false;
+					isEntering = false;
+					isExiting = false;
+					isPaused = false;
+					optionsPlayerPage = 0;
+					gAudio.playMenuBGM();
+				}
+				return;
+			}
+
+			if (currentScreen == SCREEN_GAME) {
+				performHeroAttack();
+				return;
+			}
+	}
+}
+
+/* ================================================================
+INITIALIZATION & MAIN
+================================================================ */
+void initGame()
+{
+	imgSplash = iLoadImage("Images/splash.png");
+	imgMenu = iLoadImage("Images/Home.png");
+	imgGameOver = iLoadImage("Images/Game over.png");
+
+	imgStory[0] = iLoadImage("Images/Story Part 1.png");
+	imgStory[1] = iLoadImage("Images/Story Part 2.png");
+	imgStory[2] = iLoadImage("Images/Story Part 3.png");
+	imgStory[3] = iLoadImage("Images/Story Part 4.png");
+
+	imgYouWin[0] = iLoadImage("Images/you_win_frame1.png");
+	imgYouWin[1] = iLoadImage("Images/you_win_frame2.png");
+	imgYouWin[2] = iLoadImage("Images/you_win_frame3.png");
+
+	bg[0] = iLoadImage("Images/B1.png");
+	bg[1] = iLoadImage("Images/B2.png");
+	bg[2] = iLoadImage("Images/B3.png");
+	bg[3] = iLoadImage("Images/B4.png");
+	bg[4] = iLoadImage("Images/B5.png");
+
+	// Level 3 Backgrounds
+	imgBL1 = iLoadImage("Images/BL1.png");
+	imgBL2 = iLoadImage("Images/BL2.png");
+	imgBL3 = iLoadImage("Images/BL3.png");
+
+	printf("--- Loading Character and Enemy Animations ---\n");
+
+	// Right-run: 9 frames (Run1.png to Run9.png)
+	for (int i = 0; i < 9; i++) {
+		char path[128];
+		sprintf_s(path, "Images/Run%d.png", i + 1);
+		imgRunRight[i] = iLoadImage(path);
+	}
+
+	// Left-run: 9 frames (Runl1.png to Runl9.png)
+	for (int i = 0; i < 9; i++) {
+		char path[128];
+		sprintf_s(path, "Images/Runl%d.png", i + 1);
+		imgRunLeft[i] = iLoadImage(path);
+	}
+
+	// Fight-right: 5 frames (fr1.png to fr5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/fr%d.png", i + 1);
+		imgFightRight[i] = iLoadImage(path);
+	}
+
+	// Fight-left: 5 frames (fl1.png to fl5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/fl%d.png", i + 1);
+		imgFightLeft[i] = iLoadImage(path);
+	}
+
+	// Jump Animation: 8 frames (j1.png to j8.png)
+	for (int i = 0; i < 8; i++) {
+		char path[128];
+		sprintf_s(path, "Images/j%d.png", i + 1);
+		imgJump[i] = iLoadImage(path);
+	}
+
+	// Sitting/Crouch: 3 frames (sit1.png to sit3.png)
+	for (int i = 0; i < 3; i++) {
+		char path[128];
+		sprintf_s(path, "Images/sit%d.png", i + 1);
+		imgSit[i] = iLoadImage(path);
+	}
+
+	// Fireballs: 5 frames (Fire Ball1.png to Fire Ball5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/Fire Ball%d.png", i + 1);
+		imgBall[i] = iLoadImage(path);
+	}
+
+	// Bats: 3 frames (bat1.png to bat3.png)
+	for (int i = 0; i < 3; i++) {
+		char path[128];
+		sprintf_s(path, "Images/bat%d.png", i + 1);
+		imgBat[i] = iLoadImage(path);
+	}
+
+	// Idle: 1 frame right (idle.png), 1 frame left (idlel.png)
+	imgIdle = iLoadImage("Images/idle.png");
+	imgIdleLeft = iLoadImage("Images/idlel.png");
+
+	// Ghost frames: g1, g2 (facing left), gl1, gl2 (facing right)
+	imgGhostLeft[0] = iLoadImage("Images/g1.png");
+	imgGhostLeft[1] = iLoadImage("Images/g2.png");
+	imgGhostRight[0] = iLoadImage("Images/gl1.png");
+	imgGhostRight[1] = iLoadImage("Images/gl2.png");
+
+	// Skeleton Running Right: 5 frames (sRun1.png to sRun5.png)
+	for (int i = 0; i < 5; i++) {
+		char path[128];
+		sprintf_s(path, "Images/sRun%d.png", i + 1);
+		imgSkeletonRunRight[i] = iLoadImage(path);
+	}
+
+	// Skeleton Running Left: 5 frames (sRunl1.png to sRunl5.png)
+	for (int i = 0; i < 5; i++) {
 		}
